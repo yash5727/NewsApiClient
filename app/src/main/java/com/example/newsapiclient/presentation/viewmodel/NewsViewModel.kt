@@ -18,22 +18,20 @@ class NewsViewModel(
     private val app: Application,
     private val getNewsHeadlinesUseCase: GetNewsHeadlinesUseCase
 ): AndroidViewModel(app) {
-    private val newHeadlines: MutableLiveData<Resource<APIResponse>> = MutableLiveData()
+    val newsHeadlines: MutableLiveData<Resource<APIResponse>> = MutableLiveData()
 
     fun getNewsHeadLines(country: String, page: Int) = viewModelScope.launch(Dispatchers.IO) {
-        newHeadlines.postValue(Resource.Loading())
+        newsHeadlines.postValue(Resource.Loading())
         try {
             if(isOnline(app)){
                 val apiResult = getNewsHeadlinesUseCase.execute(country, page)
-                newHeadlines.postValue(apiResult)
+                newsHeadlines.postValue(apiResult)
             }else{
-                newHeadlines.postValue(Resource.Error("Internet is not available"))
+                newsHeadlines.postValue(Resource.Error("Internet is not available"))
             }
         }catch (e: java.lang.Exception){
-            newHeadlines.postValue(Resource.Error(e.message.toString()))
+            newsHeadlines.postValue(Resource.Error(e.message.toString()))
         }
-
-
     }
     private fun isOnline(context: Context?):Boolean{
         if (context == null) return false
