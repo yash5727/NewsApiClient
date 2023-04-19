@@ -5,8 +5,10 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AbsListView
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.newsapiclient.data.util.Resource
 import com.example.newsapiclient.databinding.FragmentNewsBinding
 import com.example.newsapiclient.presentation.adapter.NewsAdapter
@@ -18,6 +20,10 @@ class NewsFragment : Fragment() {
     private lateinit var binding: FragmentNewsBinding
     private var country = "us"
     private var page = 1
+    private var isScrolling = false
+    private var isLoading = false
+    private var isLastPage = false
+    private var pages = 0
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -34,6 +40,31 @@ class NewsFragment : Fragment() {
         viewNewsList()
     }
 
+    private val onScrollListener = object : RecyclerView.OnScrollListener(){
+        override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+            super.onScrollStateChanged(recyclerView, newState)
+            if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL){
+                isScrolling = true
+            }
+        }
+
+        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+            super.onScrolled(recyclerView, dx, dy)
+            val layoutManager = binding.rvNews.layoutManager as LinearLayoutManager
+            val sizeOfCurrentList = layoutManager.itemCount
+            val visibleItems = layoutManager.childCount
+            val topPosition = layoutManager.findFirstVisibleItemPosition()
+
+            val hasReachedToEnd = topPosition + visibleItems >= sizeOfCurrentList
+            val shouldPaginates = !isLoading && !isLastPage && hasReachedToEnd && isScrolling
+            if (shouldPaginates){
+                page++
+                viewModel.getNewsHeadLines(country,page)
+                isScrolling = false
+            }
+        }
+    }
+
     private fun viewNewsList() {
         viewModel.getNewsHeadLines(country,page)
         viewModel.newsHeadlines.observe(viewLifecycleOwner){
@@ -42,6 +73,12 @@ class NewsFragment : Fragment() {
                     hideProgressBar()
                     it.data?.let {
                         adapter.differ.submitList(it.articles.toList())
+                        if (it.totalResults % 20 == 0){
+                            pages = it.totalResults / 20
+                        } else {
+                            pages = it.totalResults / 20 + 1
+                        }
+                        isLastPage = page == pages
                     }
                 }
                 is Resource.Error -> {
@@ -59,11 +96,14 @@ class NewsFragment : Fragment() {
     private fun initRecyclerView() {
         binding.rvNews.adapter = adapter
         binding.rvNews.layoutManager = LinearLayoutManager(activity)
+        binding.rvNews.addOnScrollListener(this@NewsFragment.onScrollListener)
     }
     private fun showProgressBar(){
+        isLoading = true
         binding.progressBar.visibility = View.VISIBLE
     }
     private fun hideProgressBar(){
+        isLoading = false
         binding.progressBar.visibility = View.INVISIBLE
     }
 }
