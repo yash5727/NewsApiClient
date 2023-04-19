@@ -25,8 +25,14 @@ class NewsRepositoryImpl(
         return responseToResource(newsRemoteDatasource.getTopHeadlines(country, page))
     }
 
-    override suspend fun getSearchedNewsHeadlines(searchQuery: String): Resource<APIResponse> {
-        TODO("Not yet implemented")
+    override suspend fun getSearchedNews(
+        country: String,
+        searchQuery: String,
+        page: Int
+    ): Resource<APIResponse> {
+        return responseToResource(
+            newsRemoteDatasource.getSearchedNews(country, searchQuery, page)
+        )
     }
 
     override suspend fun saveNews(article: Article) {
