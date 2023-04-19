@@ -15,9 +15,6 @@ import com.example.newsapiclient.data.util.Resource
 import com.example.newsapiclient.databinding.FragmentNewsBinding
 import com.example.newsapiclient.presentation.adapter.NewsAdapter
 import com.example.newsapiclient.presentation.viewmodel.NewsViewModel
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 class NewsFragment : Fragment() {
     private lateinit var viewModel: NewsViewModel
@@ -43,7 +40,7 @@ class NewsFragment : Fragment() {
         adapter = (activity as MainActivity).newsAdapter
         adapter.setOnItemClickListener {
             val bundle = Bundle().apply {
-                putSerializable("selectedArticle",it)
+                putParcelable("selectedArticle",it)
             }
             findNavController().navigate(R.id.action_newsFragment_to_infoFragment,bundle)
         }
@@ -128,11 +125,11 @@ class NewsFragment : Fragment() {
             }
 
             override fun onQueryTextChange(p0: String?): Boolean {
-                MainScope().launch {
-                    delay(2000)
-                    viewModel.searchNews("us",p0.toString(),page)
-                    viewSearchedNews()
-                }
+//                MainScope().launch {
+//                    delay(2000)
+//                    viewModel.searchNews("us",p0.toString(),page)
+//                    viewSearchedNews()
+//                }
                 return false
             }
 
