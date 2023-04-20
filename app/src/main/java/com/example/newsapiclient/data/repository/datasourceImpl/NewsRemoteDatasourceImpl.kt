@@ -1,6 +1,6 @@
 package com.example.newsapiclient.data.repository.datasourceImpl
 
-import com.example.newsapiclient.data.APIResponse
+import com.example.newsapiclient.data.model.APIResponse
 import com.example.newsapiclient.data.api.NewsApiService
 import com.example.newsapiclient.data.repository.datasource.NewsRemoteDatasource
 import retrofit2.Response

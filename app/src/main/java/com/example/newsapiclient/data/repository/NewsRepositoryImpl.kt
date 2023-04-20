@@ -1,7 +1,8 @@
 package com.example.newsapiclient.data.repository
 
-import com.example.newsapiclient.data.APIResponse
-import com.example.newsapiclient.data.Article
+import com.example.newsapiclient.data.model.APIResponse
+import com.example.newsapiclient.data.model.Article
+import com.example.newsapiclient.data.repository.datasource.NewsLocalDatasource
 import com.example.newsapiclient.data.repository.datasource.NewsRemoteDatasource
 import com.example.newsapiclient.data.util.Resource
 import com.example.newsapiclient.domain.repository.NewsRepository
@@ -9,7 +10,8 @@ import kotlinx.coroutines.flow.Flow
 import retrofit2.Response
 
 class NewsRepositoryImpl(
-    private val newsRemoteDatasource: NewsRemoteDatasource
+    private val newsRemoteDatasource: NewsRemoteDatasource,
+    private val newsLocalDatasource: NewsLocalDatasource
 ): NewsRepository {
 
     private fun responseToResource(response: Response<APIResponse>): Resource<APIResponse>{
@@ -36,7 +38,7 @@ class NewsRepositoryImpl(
     }
 
     override suspend fun saveNews(article: Article) {
-        TODO("Not yet implemented")
+        newsLocalDatasource.saveArticleToDb(article)
     }
 
     override suspend fun deleteNews(article: Article) {

@@ -1,6 +1,6 @@
 package com.example.newsapiclient.domain.usecase
 
-import com.example.newsapiclient.data.Article
+import com.example.newsapiclient.data.model.Article
 import com.example.newsapiclient.domain.repository.NewsRepository
 
 class SaveNewsUseCase(
