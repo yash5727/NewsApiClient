@@ -11,6 +11,7 @@ import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.newsapiclient.data.util.Resource
 import com.example.newsapiclient.databinding.FragmentNewsBinding
 import com.example.newsapiclient.presentation.adapter.NewsAdapter
@@ -38,6 +39,17 @@ class NewsFragment : Fragment() {
         binding = FragmentNewsBinding.bind(view)
         viewModel = (activity as MainActivity).viewModel
         adapter = (activity as MainActivity).newsAdapter
+
+        binding.swipeContainer.apply {
+            setColorSchemeResources(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light)
+            setOnRefreshListener {
+                viewNewsList()
+                binding.swipeContainer.isRefreshing = false
+            }
+        }
         adapter.setOnItemClickListener {
             val bundle = Bundle().apply {
                 putParcelable("selectedArticle",it)
